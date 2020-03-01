@@ -5,12 +5,15 @@ using System.Threading.Tasks;
 using BlobApi.Entities;
 using BlobApi.Services;
 using BlobApi.Services.Interfaces;
+using BlobApi.ViewModel;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BlobApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowAnyOrigin")]
     public class BaseController : ControllerBase
     {
         private readonly IBlobService _blobService;
@@ -33,7 +36,7 @@ namespace BlobApi.Controllers
                 if (id < 0)
                     return BadRequest(new { error = "The input was not valid." });
 
-                Blob _blob = _blobService.GetBlob(id);
+                BlobVM _blob = _blobService.GetBlob(id);
 
                 if (_blob == null)
                     return NotFound(new { error = "Object not found." });
@@ -58,7 +61,7 @@ namespace BlobApi.Controllers
         {
             try
             {
-                List<Blob> _blobs = new List<Blob>();
+                List<BlobVM> _blobs = new List<BlobVM>();
                 _blobs = _blobService.GetBlobs();
                 return Ok(_blobs);
             }

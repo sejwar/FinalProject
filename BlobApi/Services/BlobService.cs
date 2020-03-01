@@ -1,6 +1,7 @@
 ﻿using BlobApi.Entities;
 using BlobApi.Modal;
 using BlobApi.Services.Interfaces;
+using BlobApi.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,18 +16,37 @@ namespace BlobApi.Services
         {
             _blobDBContext = blobDBContext;
         }
-        public Blob GetBlob(int id)
+        public BlobVM GetBlob(int id)
         {
-            return _blobDBContext.blobs.FirstOrDefault<Blob>(x => x.id == id);
+            var blob = _blobDBContext.blobs.Select(b => new BlobVM()
+            {
+                id = b.id,
+                title = b.title,
+                description = b.description,
+                created_date = b.created_date,
+                subject = b.subject.name
+            }).FirstOrDefault();
+            return blob;
+            //return _blobDBContext.blobs.FirstOrDefault<Blob>(x => x.id == id);
         }
 
-        public List<Blob> GetBlobs()
+        public List<BlobVM> GetBlobs()
         {
-            return _blobDBContext.blobs.ToList<Blob>();
+            List<BlobVM> blobs = _blobDBContext.blobs.Select(b => new BlobVM()
+            {
+                id = b.id,
+                title = b.title,
+                description = b.description,
+                created_date = b.created_date,
+                subject = b.subject.name
+            }).ToList<BlobVM>();
+            return blobs;
+            //return _blobDBContext.blobs.OrderByDescending(x => x.created_date).ToList<Blob>();
         }
 
         public void SaveBlob(Blob blob)
         {
+            blob.created_date = DateTime.UtcNow;
             _blobDBContext.blobs.Add(blob);
             _blobDBContext.SaveChanges();
         }
@@ -54,7 +74,6 @@ namespace BlobApi.Services
             {
                 _blob.title = blob.title;
                 _blob.description = blob.description;
-                _blob.created_date = blob.created_date;
                 _blobDBContext.Update<Blob>(_blob);
                 _blobDBContext.SaveChanges();
             }
