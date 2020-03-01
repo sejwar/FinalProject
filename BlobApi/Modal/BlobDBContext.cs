@@ -14,5 +14,6 @@ namespace BlobApi.Modal
 
         }
         public DbSet<Blob> blobs { get; set; }
+        public DbSet<Subject> subjects { get; set; }
     }
 }
